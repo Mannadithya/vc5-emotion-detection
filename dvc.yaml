@@ -2,40 +2,51 @@ stages:
   data_ingestion:
     cmd: python src\data\data_ingestion.py
     deps:
-    - src\data\data_ingestion.py
+      - src\data\data_ingestion.py
     outs:
-    - data\raw\test.csv
-    - data\raw\train.csv
+      - data\raw\test.csv
+      - data\raw\train.csv
+    params:
+      - data_ingestion.test_size
+
   data_preprocessing:
     cmd: python src\data\data_preprocessing.py
     deps:
-    - data\raw\test.csv
-    - data\raw\train.csv
-    - src\data\data_preprocessing.py
+      - data\raw\test.csv
+      - data\raw\train.csv
+      - src\data\data_preprocessing.py
     outs:
-    - data\processed\test.csv
-    - data\processed\train.csv
+      - data\processed\test.csv
+      - data\processed\train.csv
+
   feature_engineering:
     cmd: python src/features/features.py
     deps:
-    - data/processed/test.csv
-    - data/processed/train.csv
-    - src/features/features.py
+      - data/processed/test.csv
+      - data/processed/train.csv
+      - src/features/features.py
     outs:
-    - data/interim/test_bow.csv
-    - data/interim/train_bow.csv
+      - data/interim/test_bow.csv
+      - data/interim/train_bow.csv
+    params:
+      - feature_engineering.max_features
+
   model_training:
     cmd: python src/models/modelling.py
     deps:
-    - data/interim/train_bow.csv
-    - src/models/modelling.py
+      - data/interim/train_bow.csv
+      - src/models/modelling.py
     outs:
-    - models/random_forest_model.pkl
+      - models/random_forest_model.pkl
+    params:
+      - modelling.n_estimators
+      - modelling.max_depth
+
   model_evaluation:
     cmd: python src/models/model_evaluation.py
     deps:
-    - data/interim/test_bow.csv
-    - src/models/model_evaluation.py
-    - models/random_forest_model.pkl
+      - data/interim/test_bow.csv
+      - src/models/model_evaluation.py
+      - models/random_forest_model.pkl
     outs:
-    - reports/metrics.json
+      - reports/metrics.json
